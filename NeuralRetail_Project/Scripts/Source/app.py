@@ -20,6 +20,7 @@ from prophet import Prophet
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
+import matplotlib.pyplot as plt
 
 import warnings
 warnings.filterwarnings('ignore')

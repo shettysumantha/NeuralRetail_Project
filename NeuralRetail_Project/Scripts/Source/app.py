@@ -21,7 +21,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
 import matplotlib.pyplot as plt
-  from pathlib import Path
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 

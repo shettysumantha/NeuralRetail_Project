@@ -146,11 +146,11 @@ section[data-testid="stSidebar"] {
 def load_data():
 
     #df = pd.read_csv("cleaned_retail.csv")
-BASE_DIR = Path(__file__).resolve().parent
+    BASE_DIR = Path(__file__).resolve().parent
 
-DATA_PATH = BASE_DIR / "cleaned_retail.csv"
+    DATA_PATH = BASE_DIR / "cleaned_retail.csv"
 
-df = pd.read_csv(DATA_PATH)
+    df = pd.read_csv(DATA_PATH)
     df.columns = df.columns.str.lower()
 
     if 'invoicedate' in df.columns:

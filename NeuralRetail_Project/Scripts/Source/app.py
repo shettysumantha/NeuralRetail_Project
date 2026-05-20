@@ -20,7 +20,8 @@ from prophet import Prophet
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
-
+import matplotlib.pyplot as plt
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -144,8 +145,12 @@ section[data-testid="stSidebar"] {
 @st.cache_data
 def load_data():
 
-    df = pd.read_csv("cleaned_retail.csv")
+    #df = pd.read_csv("cleaned_retail.csv")
+    BASE_DIR = Path(__file__).resolve().parent
 
+    DATA_PATH = BASE_DIR / "cleaned_retail.csv"
+
+    df = pd.read_csv(DATA_PATH)
     df.columns = df.columns.str.lower()
 
     if 'invoicedate' in df.columns:

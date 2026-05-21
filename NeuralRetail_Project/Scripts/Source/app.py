@@ -682,14 +682,28 @@ with tab6:
         rfm
     )
 
-    kmeans = KMeans(
-        n_clusters=4,
-        random_state=42
-    )
+   # ============================================================
+# SAFE KMEANS CLUSTERING
+# ============================================================
 
-    rfm['Cluster'] = (
-        kmeans.fit_predict(scaled)
-    )
+# Check minimum rows before clustering
+
+    if len(rfm) >= 4:
+
+        kmeans = KMeans(
+            n_clusters=4,
+            random_state=42
+        )
+
+        rfm['Cluster'] = kmeans.fit_predict(scaled)
+
+    else:
+
+        st.warning(
+            "Not enough data available for clustering after applying filters."
+        )
+
+        rfm['Cluster'] = 0
 
     fig_cluster = px.scatter_3d(
         rfm.reset_index(),

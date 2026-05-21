@@ -79,7 +79,7 @@ section[data-testid="stSidebar"] {
 
     background: linear-gradient(
         135deg,
-        rgba(157,229,255,0.18),
+        rgba(0,229,255,0.18),
         rgba(157,78,221,0.18)
     );
 

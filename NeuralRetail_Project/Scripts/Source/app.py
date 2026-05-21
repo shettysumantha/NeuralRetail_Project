@@ -117,7 +117,7 @@ section[data-testid="stSidebar"] {
 
     font-weight: 600;
 
-    color: #FFFFFF;
+    color: #F54927;
 
     letter-spacing: 1px;
 

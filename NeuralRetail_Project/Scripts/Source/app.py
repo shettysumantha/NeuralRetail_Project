@@ -137,6 +137,11 @@ section[data-testid="stSidebar"] {
     text-shadow: 0 0 12px rgba(0,229,255,0.6);
 }
 
+h1, h2, h3, h4, h5 {
+
+    color: white !important;
+}
+
 .metric-title {
     font-size: 15px;
     color: #cbd5e1;

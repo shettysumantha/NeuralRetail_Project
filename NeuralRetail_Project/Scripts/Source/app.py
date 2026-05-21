@@ -76,25 +76,65 @@ section[data-testid="stSidebar"] {
 }
 
 .kpi-card {
+
     background: linear-gradient(
         135deg,
-        rgba(59,130,246,0.25),
-        rgba(139,92,246,0.25)
+        rgba(0,229,255,0.18),
+        rgba(157,78,221,0.18)
     );
 
-    border-radius: 20px;
-    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.15);
+
+    backdrop-filter: blur(12px);
+
+    border-radius: 22px;
+
+    padding: 25px;
 
     box-shadow:
-        0 8px 30px rgba(0,0,0,0.35);
+        0 8px 32px rgba(0,0,0,0.45),
+        0 0 20px rgba(0,229,255,0.15);
 
-    transition: 0.3s;
+    transition: all 0.3s ease-in-out;
+
+    text-align: center;
+
+    margin-bottom: 15px;
 }
 
 .kpi-card:hover {
-    transform: translateY(-6px);
+
+    transform: translateY(-5px);
+
     box-shadow:
-        0 10px 35px rgba(59,130,246,0.4);
+        0 12px 35px rgba(0,0,0,0.55),
+        0 0 30px rgba(0,229,255,0.35);
+}
+
+.kpi-title {
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #FFFFFF;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 12px;
+
+    text-transform: uppercase;
+}
+
+.kpi-value {
+
+    font-size: 42px;
+
+    font-weight: 800;
+
+    color: #00E5FF;
+
+    text-shadow: 0 0 12px rgba(0,229,255,0.6);
 }
 
 .metric-title {

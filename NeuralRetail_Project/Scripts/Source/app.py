@@ -193,28 +193,81 @@ df['weekday'] = (
 # SIDEBAR
 # ============================================================
 
-st.sidebar.title("⚡ AI Dashboard Filters")
+st.sidebar.markdown("## 🔍 Dashboard Filters")
 
-country_filter = st.sidebar.multiselect(
-    "🌍 Country",
-    df['country'].unique(),
-    default=df['country'].unique()
+df['MonthName'] = df['invoicedate'].dt.month_name()
+
+month_list = [
+    'January', 'February', 'March', 'April',
+    'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December'
+]
+
+available_months = [
+    month for month in month_list
+    if month in df['MonthName'].unique()
+]
+
+month_options = ['All'] + available_months
+
+# If All selected
+if 'All' in selected_months:
+    selected_months = available_months
+
+country_list = sorted(
+    df['country']
+    .dropna()
+    .unique()
 )
 
-month_filter = st.sidebar.multiselect(
-    "📅 Month",
-    sorted(df['month'].unique()),
-    default=sorted(df['month'].unique())
+country_options = ['All'] + country_list
+
+selected_countries = st.sidebar.multiselect(
+    "🌍 Select Country",
+    options=country_options,
+    default=['All'],
+    help="Search and select countries"
 )
+
+# If All selected
+if 'All' in selected_countries:
+    selected_countries = country_list
+
+# ============================================================
+# CUSTOMER SEARCH FILTER
+# ============================================================
+
+customer_list = sorted(
+    df['customer_id']
+    .dropna()
+    .astype(str)
+    .unique()
+)
+
+selected_customers = st.sidebar.multiselect(
+    "🔍 Search Customer ID",
+    options=customer_list,
+    default=[]
+)
+
 
 # ============================================================
 # APPLY FILTERS
 # ============================================================
 
 filtered_df = df[
-    (df['country'].isin(country_filter)) &
-    (df['month'].isin(month_filter))
+    (df['MonthName'].isin(selected_months)) &
+    (df['country'].isin(selected_countries))
 ]
+
+# Customer filter
+if len(selected_customers) > 0:
+
+    filtered_df = filtered_df[
+        filtered_df['customer_id']
+        .astype(str)
+        .isin(selected_customers)
+    ]
 
 # ============================================================
 # HEADER

@@ -132,7 +132,7 @@ section[data-testid="stSidebar"] {
 
     font-weight: 800;
 
-    color: #00E5FF;
+    color: #ffffff;
 
     text-shadow: 0 0 12px rgba(0,229,255,0.6);
 }

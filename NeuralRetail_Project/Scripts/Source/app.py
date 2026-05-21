@@ -193,26 +193,51 @@ df['weekday'] = (
 # SIDEBAR
 # ============================================================
 
+# ============================================================
+# SIDEBAR FILTERS
+# ============================================================
+
 st.sidebar.markdown("## 🔍 Dashboard Filters")
+
+# ============================================================
+# CREATE MONTH COLUMN
+# ============================================================
 
 df['MonthName'] = df['invoicedate'].dt.month_name()
 
-month_list = [
+# ============================================================
+# MONTH FILTER
+# ============================================================
+
+month_order = [
     'January', 'February', 'March', 'April',
     'May', 'June', 'July', 'August',
     'September', 'October', 'November', 'December'
 ]
 
 available_months = [
-    month for month in month_list
+    month for month in month_order
     if month in df['MonthName'].unique()
 ]
 
 month_options = ['All'] + available_months
 
-# If All selected
+selected_months = st.sidebar.multiselect(
+    "📅 Select Month",
+    options=month_options,
+    default=['All']
+)
+
+# ============================================================
+# ALL MONTH LOGIC
+# ============================================================
+
 if 'All' in selected_months:
     selected_months = available_months
+
+# ============================================================
+# COUNTRY FILTER
+# ============================================================
 
 country_list = sorted(
     df['country']
@@ -225,11 +250,13 @@ country_options = ['All'] + country_list
 selected_countries = st.sidebar.multiselect(
     "🌍 Select Country",
     options=country_options,
-    default=['All'],
-    help="Search and select countries"
+    default=['All']
 )
 
-# If All selected
+# ============================================================
+# ALL COUNTRY LOGIC
+# ============================================================
+
 if 'All' in selected_countries:
     selected_countries = country_list
 
@@ -250,7 +277,6 @@ selected_customers = st.sidebar.multiselect(
     default=[]
 )
 
-
 # ============================================================
 # APPLY FILTERS
 # ============================================================
@@ -260,7 +286,10 @@ filtered_df = df[
     (df['country'].isin(selected_countries))
 ]
 
-# Customer filter
+# ============================================================
+# CUSTOMER FILTER
+# ============================================================
+
 if len(selected_customers) > 0:
 
     filtered_df = filtered_df[

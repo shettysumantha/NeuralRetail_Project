@@ -461,26 +461,83 @@ with tab1:
         unsafe_allow_html=True
     )
 
+    # ============================================================
+    # MONTH WISE SALES
+    # ============================================================
+
     sales_by_month = (
         filtered_df
-        .groupby('month')['totalsales']
+        .groupby('MonthName')['totalsales']
         .sum()
         .reset_index()
     )
 
+    # ============================================================
+    # MONTH ORDER
+    # ============================================================
+
+    month_order = [
+        'January', 'February', 'March',
+        'April', 'May', 'June',
+        'July', 'August', 'September',
+        'October', 'November', 'December'
+    ]
+
+    sales_by_month['MonthName'] = pd.Categorical(
+        sales_by_month['MonthName'],
+        categories=month_order,
+        ordered=True
+    )
+
+    sales_by_month = sales_by_month.sort_values(
+        'MonthName'
+    )
+
+    # ============================================================
+    # AREA CHART
+    # ============================================================
+
     fig = px.area(
         sales_by_month,
-        x='month',
+        x='MonthName',
         y='totalsales',
         template='plotly_dark',
         color_discrete_sequence=['#38bdf8']
     )
 
+    # ============================================================
+    # LAYOUT
+    # ============================================================
+
     fig.update_layout(
+
+        title={
+
+            'text': 'Monthly Revenue Trend',
+            'x': 0.5,
+            'xanchor': 'center'
+
+        },
+
+        xaxis_title='Month',
+
+        yaxis_title='Total Revenue',
+
         paper_bgcolor='rgba(0,0,0,0)',
+
         plot_bgcolor='rgba(0,0,0,0)',
+
+        font=dict(
+            color='white',
+            size=14
+        ),
+
         height=500
     )
+
+    # ============================================================
+    # SHOW CHART
+    # ============================================================
 
     st.plotly_chart(
         fig,

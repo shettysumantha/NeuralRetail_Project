@@ -438,92 +438,23 @@ with col4:
     """, unsafe_allow_html=True)
 
 # ============================================================
-# SIDEBAR NAVIGATION MENU
+# TABS
 # ============================================================
 
-st.sidebar.markdown("---")
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "Executive Summary",
+    "Sales Performance",
+    "Customer Insights",
+    "Regional Analysis",
+    "Forecasting",
+    "RFM Segmentation"
+])
 
-st.sidebar.markdown("""
-<div style='text-align:center;
-font-size:22px;
-font-weight:700;
-color:#00E5FF;
-padding-bottom:10px;'>
-☰ Dashboard Menu
-</div>
-""", unsafe_allow_html=True)
-
-menu = st.sidebar.radio(
-
-    "Navigation",
-
-    [
-
-        "🏠 Home",
-
-        "📈 Executive Summary",
-
-        "💰 Sales Performance",
-
-        "👥 Customer Insights",
-
-        "🌍 Regional Analysis",
-
-        "🔮 Forecasting",
-
-        "🧠 RFM Segmentation",
-
-        "📥 Download Reports"
-
-    ],
-
-    label_visibility="collapsed"
-)
 # ============================================================
 # TAB 1 — EXECUTIVE SUMMARY
 # ============================================================
 
-# ============================================================
-# HOME PAGE
-# ============================================================
-
-if menu == "🏠 Home":
-
-    st.markdown("""
-    <div class='section-title'>
-    Enterprise Dashboard Overview
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class='insight-box'>
-
-    🚀 Welcome to NeuralRetail Enterprise Intelligence Platform.<br><br>
-
-    This AI-powered dashboard provides:
-
-    <ul>
-    <li>Executive Business Insights</li>
-    <li>Sales Analytics</li>
-    <li>Customer Intelligence</li>
-    <li>Regional Performance</li>
-    <li>AI Forecasting</li>
-    <li>RFM Segmentation</li>
-    <li>Anomaly Detection</li>
-    <li>Business Correlation Analysis</li>
-    </ul>
-
-    Use the left navigation menu to explore each section.
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.image(
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-        use_container_width=True
-    )
-
-elif menu == "📈 Executive Summary":
+with tab1:
 
     st.markdown(
         "<div class='section-title'>Executive Overview</div>",
@@ -625,7 +556,7 @@ elif menu == "📈 Executive Summary":
 # TAB 2 — SALES PERFORMANCE
 # ============================================================
 
-elif menu == "💰 Sales Performance":
+with tab2:
 
     st.markdown(
         "<div class='section-title'>Sales Analytics</div>",
@@ -688,7 +619,7 @@ elif menu == "💰 Sales Performance":
 # TAB 3 — CUSTOMER INSIGHTS
 # ============================================================
 
-elif menu == "👥 Customer Insights":
+with tab3:
 
     st.markdown(
         "<div class='section-title'>Customer Analytics</div>",
@@ -724,7 +655,8 @@ elif menu == "👥 Customer Insights":
 # ============================================================
 # TAB 4 — REGIONAL ANALYSIS
 # ============================================================
-elif menu == "🌍 Regional Analysis":
+
+with tab4:
 
     st.markdown(
         "<div class='section-title'>Regional Performance</div>",
@@ -764,7 +696,7 @@ elif menu == "🌍 Regional Analysis":
 # TAB 5 — FORECASTING
 # ============================================================
 
-elif menu == "🔮 Forecasting":
+with tab5:
 
     st.markdown(
         "<div class='section-title'>Forecasting & Trends</div>",
@@ -886,7 +818,7 @@ elif menu == "🔮 Forecasting":
 # TAB 6 — RFM SEGMENTATION
 # ============================================================
 
-elif menu == "🧠 RFM Segmentation":
+with tab6:
 
     st.markdown(
         """

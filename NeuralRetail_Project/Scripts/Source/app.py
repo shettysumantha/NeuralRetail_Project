@@ -309,12 +309,27 @@ if 'All' in selected_countries:
 # DATE FILTER
 # ============================================================
 
-min_date = df['invoicedate'].min()
-max_date = df['invoicedate'].max()
+st.sidebar.markdown("### 📅 Date Filter")
 
-selected_date_range = st.sidebar.date_input(
-    "📅 Select Date Range",
-    [min_date, max_date],
+# Get minimum and maximum dates from dataset
+
+min_date = df['invoicedate'].min().date()
+max_date = df['invoicedate'].max().date()
+
+# FROM DATE
+
+from_date = st.sidebar.date_input(
+    "From Date",
+    value=min_date,
+    min_value=min_date,
+    max_value=max_date
+)
+
+# TO DATE
+
+to_date = st.sidebar.date_input(
+    "To Date",
+    value=max_date,
     min_value=min_date,
     max_value=max_date
 )
@@ -326,7 +341,13 @@ selected_date_range = st.sidebar.date_input(
 
 filtered_df = df[
     (df['MonthName'].isin(selected_months)) &
-    (df['country'].isin(selected_countries))
+    (df['country'].isin(selected_countries)) &
+    (
+        df['invoicedate'].dt.date.between(
+            from_date,
+            to_date
+        )
+    )
 ]
 
 # ============================================================

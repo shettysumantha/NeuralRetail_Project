@@ -470,8 +470,8 @@ with tab1:
 
     fig = px.area(
         sales_by_month,
-        x='Month',
-        y='Total Sales',
+        x='month',
+        y='totalsales',
         template='plotly_dark',
         color_discrete_sequence=['#38bdf8']
     )

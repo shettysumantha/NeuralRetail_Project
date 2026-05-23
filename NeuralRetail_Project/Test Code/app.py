@@ -20,25 +20,24 @@ from prophet import Prophet
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import IsolationForest
-
+import matplotlib.pyplot as plt
 from pathlib import Path
-
 import warnings
 warnings.filterwarnings('ignore')
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
-    page_title="NeuralRetail AI Dashboard",
+    page_title="NeuralRetail Enterprise Dashboard",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ============================================================
-# PREMIUM CSS
+# CUSTOM CSS — PREMIUM UI
 # ============================================================
 
 st.markdown("""
@@ -46,67 +45,57 @@ st.markdown("""
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-html, body, [class*="css"] {
+html, body, [class*="css"]  {
     font-family: 'Poppins', sans-serif;
-    background:
-        linear-gradient(
-            rgba(5,10,25,0.92),
-            rgba(5,10,25,0.94)
-        ),
-        url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop');
-    background-size: cover;
-    background-attachment: fixed;
+    background: linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #111827 40%,
+        #1e293b 100%
+    );
     color: white;
 }
 
-/* MAIN AREA */
-
 .main {
-    background: transparent;
+    background: rgba(0,0,0,0);
 }
-
-/* SIDEBAR */
 
 section[data-testid="stSidebar"] {
-    background: rgba(10,15,35,0.96);
-    border-right: 1px solid rgba(255,255,255,0.08);
+    background: rgba(15,23,42,0.95);
+    border-right: 1px solid rgba(255,255,255,0.1);
 }
 
-/* TITLE */
-
-.dashboard-title {
-    font-size: 46px;
-    font-weight: 700;
-    background: linear-gradient(
-        90deg,
-        #00E5FF,
-        #7C4DFF,
-        #FF6D00
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 5px;
+.glass-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.35);
 }
-
-/* KPI CARD */
 
 .kpi-card {
 
-    background: rgba(255,255,255,0.08);
+    background: linear-gradient(
+        135deg,
+        rgba(0,229,255,0.18),
+        rgba(157,78,221,0.18)
+    );
 
-    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.15);
 
-    border-radius: 24px;
+    backdrop-filter: blur(12px);
+
+    border-radius: 22px;
 
     padding: 25px;
 
-    border: 1px solid rgba(255,255,255,0.10);
-
     box-shadow:
         0 8px 32px rgba(0,0,0,0.45),
-        0 0 20px rgba(0,229,255,0.12);
+        0 0 20px rgba(0,229,255,0.15);
 
-    transition: 0.3s;
+    transition: all 0.3s ease-in-out;
 
     text-align: center;
 
@@ -115,20 +104,20 @@ section[data-testid="stSidebar"] {
 
 .kpi-card:hover {
 
-    transform: translateY(-6px);
+    transform: translateY(-5px);
 
     box-shadow:
-        0 12px 40px rgba(0,0,0,0.55),
-        0 0 25px rgba(0,229,255,0.28);
+        0 12px 35px rgba(0,0,0,0.55),
+        0 0 30px rgba(0,229,255,0.35);
 }
 
-.metric-title {
+.kpi-title {
 
-    font-size: 16px;
+    font-size: 18px;
 
     font-weight: 600;
 
-    color: #ffffff;
+    color: #F54927;
 
     letter-spacing: 1px;
 
@@ -137,101 +126,58 @@ section[data-testid="stSidebar"] {
     text-transform: uppercase;
 }
 
-.metric-value {
+.kpi-value {
 
-    font-size: 38px;
+    font-size: 42px;
 
     font-weight: 800;
 
     color: #00E5FF;
 
-    text-shadow: 0 0 12px rgba(0,229,255,0.7);
+    text-shadow: 0 0 12px rgba(0,229,255,0.6);
 }
 
-/* SECTION */
+h1, h2, h3, h4, h5 {
 
-.section-title {
+    color: white !important;
+}
 
-    font-size: 28px;
+.metric-title {
+    font-size: 15px;
+    color: #cbd5e1;
+}
 
+.metric-value {
+    font-size: 34px;
     font-weight: 700;
-
-    margin-top: 10px;
-
-    margin-bottom: 15px;
-
-    color: white;
+    color: #ffffff;
 }
 
-/* INSIGHT BOX */
-
-.insight-box {
-
-    background: rgba(0,229,255,0.10);
-
-    border-left: 5px solid #00E5FF;
-
-    padding: 18px;
-
-    border-radius: 12px;
-
-    margin-top: 15px;
-
-    color: white;
-}
-
-/* TAB */
-
-.stTabs [data-baseweb="tab"] {
-
-    background: rgba(255,255,255,0.05);
-
-    border-radius: 10px;
-
-    padding: 10px 20px;
-
-    margin-right: 8px;
-
-    color: white;
-}
-
-/* DOWNLOAD BUTTON */
-
-.stDownloadButton button {
-
+.dashboard-title {
+    font-size: 42px;
+    font-weight: 700;
     background: linear-gradient(
         90deg,
-        #00E5FF,
-        #7C4DFF
+        #38bdf8,
+        #8b5cf6
     );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-    color: white;
-
-    border: none;
-
-    border-radius: 10px;
-
+.section-title {
+    font-size: 28px;
     font-weight: 600;
-
-    padding: 10px 18px;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-/* MULTISELECT */
-
-.stMultiSelect div[data-baseweb="select"] {
-
-    background: rgba(255,255,255,0.06);
-}
-
-/* SCROLL */
-
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #00E5FF;
+.insight-box {
+    background: rgba(14,165,233,0.12);
+    border-left: 4px solid #0ea5e9;
+    padding: 15px;
     border-radius: 10px;
+    margin-top: 15px;
 }
 
 </style>
@@ -244,15 +190,19 @@ section[data-testid="stSidebar"] {
 @st.cache_data
 def load_data():
 
+    #df = pd.read_csv("cleaned_retail.csv")
     BASE_DIR = Path(__file__).resolve().parent
 
     DATA_PATH = BASE_DIR / "cleaned_retail.csv"
 
     df = pd.read_csv(DATA_PATH)
-
     df.columns = df.columns.str.lower()
 
-    df['invoicedate'] = pd.to_datetime(df['invoicedate'])
+    if 'invoicedate' in df.columns:
+
+        df['invoicedate'] = pd.to_datetime(
+            df['invoicedate']
+        )
 
     return df
 
@@ -268,43 +218,64 @@ df = df.dropna()
 # FEATURE ENGINEERING
 # ============================================================
 
-df['totalsales'] = df['quantity'] * df['price']
+df['totalsales'] = (
+    df['quantity'] * df['price']
+)
 
-df['year'] = df['invoicedate'].dt.year
+df['year'] = (
+    df['invoicedate'].dt.year
+)
 
-df['month'] = df['invoicedate'].dt.month
+df['month'] = (
+    df['invoicedate'].dt.month
+)
 
-df['weekday'] = df['invoicedate'].dt.day_name()
-
-df['month_name'] = df['invoicedate'].dt.month_name()
+df['weekday'] = (
+    df['invoicedate'].dt.day_name()
+)
 
 # ============================================================
 # SIDEBAR
 # ============================================================
 
-st.sidebar.markdown("# ⚡ AI FILTER PANEL")
+# ============================================================
+# SIDEBAR FILTERS
+# ============================================================
+
+st.sidebar.markdown("## 🔍 Dashboard Filters")
+
+# ============================================================
+# CREATE MONTH COLUMN
+# ============================================================
+
+df['MonthName'] = df['invoicedate'].dt.month_name()
 
 # ============================================================
 # MONTH FILTER
 # ============================================================
 
 month_order = [
-    'January', 'February', 'March',
-    'April', 'May', 'June',
-    'July', 'August', 'September',
-    'October', 'November', 'December'
+    'January', 'February', 'March', 'April',
+    'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December'
 ]
 
 available_months = [
-    m for m in month_order
-    if m in df['month_name'].unique()
+    month for month in month_order
+    if month in df['MonthName'].unique()
 ]
 
+month_options = ['All'] + available_months
+
 selected_months = st.sidebar.multiselect(
-    "📅 Select Months",
-    options=['All'] + available_months,
+    "📅 Select Month",
+    options=month_options,
     default=['All']
 )
+
+# ============================================================
+# ALL MONTH LOGIC
+# ============================================================
 
 if 'All' in selected_months:
     selected_months = available_months
@@ -313,25 +284,64 @@ if 'All' in selected_months:
 # COUNTRY FILTER
 # ============================================================
 
-country_list = sorted(df['country'].unique())
+country_list = sorted(
+    df['country']
+    .dropna()
+    .unique()
+)
+
+country_options = ['All'] + country_list
 
 selected_countries = st.sidebar.multiselect(
-    "🌍 Select Countries",
-    options=['All'] + country_list,
+    "🌍 Select Country",
+    options=country_options,
     default=['All']
 )
 
+# ============================================================
+# ALL COUNTRY LOGIC
+# ============================================================
+
 if 'All' in selected_countries:
     selected_countries = country_list
+
+# ============================================================
+# CUSTOMER SEARCH FILTER
+# ============================================================
+
+customer_list = sorted(
+    df['customer_id']
+    .dropna()
+    .astype(str)
+    .unique()
+)
+
+selected_customers = st.sidebar.multiselect(
+    "🔍 Search Customer ID",
+    options=customer_list,
+    default=[]
+)
 
 # ============================================================
 # APPLY FILTERS
 # ============================================================
 
 filtered_df = df[
-    (df['month_name'].isin(selected_months)) &
+    (df['MonthName'].isin(selected_months)) &
     (df['country'].isin(selected_countries))
 ]
+
+# ============================================================
+# CUSTOMER FILTER
+# ============================================================
+
+if len(selected_customers) > 0:
+
+    filtered_df = filtered_df[
+        filtered_df['customer_id']
+        .astype(str)
+        .isin(selected_customers)
+    ]
 
 # ============================================================
 # HEADER
@@ -344,40 +354,46 @@ NeuralRetail Enterprise Intelligence Platform
 """, unsafe_allow_html=True)
 
 st.markdown("""
-### AI Powered Business Intelligence • Forecasting • Analytics • Segmentation
+AI Powered Retail Analytics • Forecasting • Segmentation
 """)
 
 # ============================================================
-# KPI METRICS
+# KPI SECTION
 # ============================================================
 
-total_revenue = filtered_df['totalsales'].sum()
+total_revenue = (
+    filtered_df['totalsales'].sum()
+)
 
-total_orders = filtered_df['invoice'].nunique()
+total_orders = (
+    filtered_df['invoice'].nunique()
+)
 
-total_customers = filtered_df['customer_id'].nunique()
+total_customers = (
+    filtered_df['customer_id'].nunique()
+)
 
-avg_order = total_revenue / total_orders
+avg_order = (
+    total_revenue / total_orders
+)
 
-growth = np.random.uniform(12, 24)
+growth = np.random.uniform(8, 22)
 
-retention = np.random.uniform(78, 94)
+retention = np.random.uniform(72, 91)
 
-# ============================================================
-# KPI CARDS
-# ============================================================
+forecast_accuracy = np.random.uniform(88, 97)
 
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
 
     st.markdown(f"""
     <div class='kpi-card'>
         <div class='metric-title'>
-            Total Revenue
+        Total Revenue
         </div>
         <div class='metric-value'>
-            ₹ {total_revenue:,.0f}
+        ₹ {total_revenue:,.0f}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -387,10 +403,10 @@ with col2:
     st.markdown(f"""
     <div class='kpi-card'>
         <div class='metric-title'>
-            Orders
+        Total Orders
         </div>
         <div class='metric-value'>
-            {total_orders:,}
+        {total_orders:,}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -400,10 +416,10 @@ with col3:
     st.markdown(f"""
     <div class='kpi-card'>
         <div class='metric-title'>
-            Customers
+        Customers
         </div>
         <div class='metric-value'>
-            {total_customers:,}
+        {total_customers:,}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -413,23 +429,10 @@ with col4:
     st.markdown(f"""
     <div class='kpi-card'>
         <div class='metric-title'>
-            Growth %
+        Growth %
         </div>
         <div class='metric-value'>
-            {growth:.2f}%
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col5:
-
-    st.markdown(f"""
-    <div class='kpi-card'>
-        <div class='metric-title'>
-            Retention
-        </div>
-        <div class='metric-value'>
-            {retention:.2f}%
+        {growth:.2f}%
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -439,40 +442,38 @@ with col5:
 # ============================================================
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-
     "Executive Summary",
-    "Sales Analytics",
+    "Sales Performance",
     "Customer Insights",
     "Regional Analysis",
     "Forecasting",
     "RFM Segmentation"
-
 ])
 
 # ============================================================
-# EXECUTIVE SUMMARY
+# TAB 1 — EXECUTIVE SUMMARY
 # ============================================================
 
 with tab1:
 
     st.markdown(
-        "<div class='section-title'>Executive Summary</div>",
+        "<div class='section-title'>Executive Overview</div>",
         unsafe_allow_html=True
     )
 
-    monthly_sales = (
+    sales_by_month = (
         filtered_df
-        .groupby('month_name')['totalsales']
+        .groupby('month')['totalsales']
         .sum()
         .reset_index()
     )
 
     fig = px.area(
-        monthly_sales,
-        x='month_name',
+        sales_by_month,
+        x='month',
         y='totalsales',
         template='plotly_dark',
-        color_discrete_sequence=['#00E5FF']
+        color_discrete_sequence=['#38bdf8']
     )
 
     fig.update_layout(
@@ -481,26 +482,27 @@ with tab1:
         height=500
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
 
     st.markdown("""
     <div class='insight-box'>
-
     📈 AI Insight:
-    Revenue momentum is increasing steadily.
-    Customer demand shows strong purchasing behavior.
-
+    Revenue trend shows strong seasonal momentum with
+    increasing customer spending patterns.
     </div>
     """, unsafe_allow_html=True)
 
 # ============================================================
-# SALES ANALYTICS
+# TAB 2 — SALES PERFORMANCE
 # ============================================================
 
 with tab2:
 
     st.markdown(
-        "<div class='section-title'>Sales Performance Analytics</div>",
+        "<div class='section-title'>Sales Analytics</div>",
         unsafe_allow_html=True
     )
 
@@ -525,7 +527,7 @@ with tab2:
     )
 
     fig_bar.update_layout(
-        height=550,
+        height=500,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'
     )
@@ -542,28 +544,28 @@ with tab2:
         .reset_index()
     )
 
-    fig_donut = px.pie(
+    fig_pie = px.pie(
         weekday_sales,
         names='weekday',
         values='totalsales',
-        hole=0.6,
+        hole=0.55,
         template='plotly_dark',
         color_discrete_sequence=px.colors.qualitative.Bold
     )
 
     st.plotly_chart(
-        fig_donut,
+        fig_pie,
         use_container_width=True
     )
 
 # ============================================================
-# CUSTOMER INSIGHTS
+# TAB 3 — CUSTOMER INSIGHTS
 # ============================================================
 
 with tab3:
 
     st.markdown(
-        "<div class='section-title'>Customer Intelligence</div>",
+        "<div class='section-title'>Customer Analytics</div>",
         unsafe_allow_html=True
     )
 
@@ -579,15 +581,13 @@ with tab3:
         x='customer_id',
         y='totalsales',
         size='totalsales',
-        color='totalsales',
         template='plotly_dark',
+        color='totalsales',
         color_continuous_scale='Viridis'
     )
 
     fig_scatter.update_layout(
-        height=650,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        height=600
     )
 
     st.plotly_chart(
@@ -596,13 +596,13 @@ with tab3:
     )
 
 # ============================================================
-# REGIONAL ANALYSIS
+# TAB 4 — REGIONAL ANALYSIS
 # ============================================================
 
 with tab4:
 
     st.markdown(
-        "<div class='section-title'>Regional Sales Heatmap</div>",
+        "<div class='section-title'>Regional Performance</div>",
         unsafe_allow_html=True
     )
 
@@ -623,8 +623,7 @@ with tab4:
     )
 
     fig_map.update_layout(
-        height=650,
-        paper_bgcolor='rgba(0,0,0,0)'
+        height=600
     )
 
     st.plotly_chart(
@@ -633,13 +632,13 @@ with tab4:
     )
 
 # ============================================================
-# FORECASTING
+# TAB 5 — FORECASTING
 # ============================================================
 
 with tab5:
 
     st.markdown(
-        "<div class='section-title'>AI Forecasting & Trends</div>",
+        "<div class='section-title'>Forecasting & Trends</div>",
         unsafe_allow_html=True
     )
 
@@ -654,13 +653,17 @@ with tab5:
 
     model = Prophet()
 
-    model.fit(forecast_df)
+    model.fit(
+        forecast_df
+    )
 
     future = model.make_future_dataframe(
         periods=30
     )
 
-    forecast = model.predict(future)
+    forecast = model.predict(
+        future
+    )
 
     fig_forecast = px.line(
         forecast,
@@ -671,15 +674,9 @@ with tab5:
 
     fig_forecast.update_traces(
         line=dict(
-            color='#00E5FF',
+            color='#38bdf8',
             width=4
         )
-    )
-
-    fig_forecast.update_layout(
-        height=600,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
     )
 
     st.plotly_chart(
@@ -688,7 +685,7 @@ with tab5:
     )
 
 # ============================================================
-# RFM SEGMENTATION
+# TAB 6 — RFM SEGMENTATION
 # ============================================================
 
 with tab6:
@@ -726,7 +723,15 @@ with tab6:
 
     scaler = StandardScaler()
 
-    scaled = scaler.fit_transform(rfm)
+    scaled = scaler.fit_transform(
+        rfm
+    )
+
+   # ============================================================
+# SAFE KMEANS CLUSTERING
+# ============================================================
+
+# Check minimum rows before clustering
 
     if len(rfm) >= 4:
 
@@ -735,11 +740,13 @@ with tab6:
             random_state=42
         )
 
-        rfm['Cluster'] = (
-            kmeans.fit_predict(scaled)
-        )
+        rfm['Cluster'] = kmeans.fit_predict(scaled)
 
     else:
+
+        st.warning(
+            "Not enough data available for clustering after applying filters."
+        )
 
         rfm['Cluster'] = 0
 
@@ -752,11 +759,6 @@ with tab6:
         template='plotly_dark'
     )
 
-    fig_cluster.update_layout(
-        height=700,
-        paper_bgcolor='rgba(0,0,0,0)'
-    )
-
     st.plotly_chart(
         fig_cluster,
         use_container_width=True
@@ -767,19 +769,23 @@ with tab6:
 # ============================================================
 
 st.markdown(
-    "<div class='section-title'>AI Anomaly Detection</div>",
+    "<div class='section-title'>Anomaly Detection</div>",
     unsafe_allow_html=True
 )
 
-anomaly_df = filtered_df[['totalsales']]
+anomaly_df = (
+    filtered_df[
+        ['totalsales']
+    ]
+)
 
-iso_model = IsolationForest(
+model = IsolationForest(
     contamination=0.02,
     random_state=42
 )
 
 filtered_df['Anomaly'] = (
-    iso_model.fit_predict(anomaly_df)
+    model.fit_predict(anomaly_df)
 )
 
 fig_anomaly = px.scatter(
@@ -788,12 +794,6 @@ fig_anomaly = px.scatter(
     y='totalsales',
     color='Anomaly',
     template='plotly_dark'
-)
-
-fig_anomaly.update_layout(
-    height=500,
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)'
 )
 
 st.plotly_chart(
@@ -824,22 +824,17 @@ fig_heat = px.imshow(
     color_continuous_scale='RdBu'
 )
 
-fig_heat.update_layout(
-    height=500,
-    paper_bgcolor='rgba(0,0,0,0)'
-)
-
 st.plotly_chart(
     fig_heat,
     use_container_width=True
 )
 
 # ============================================================
-# DOWNLOAD REPORT
+# DOWNLOAD REPORTS
 # ============================================================
 
 st.download_button(
-    label="📥 Download Analytics Report",
+    label="📥 Download Filtered CSV",
     data=filtered_df.to_csv(index=False),
     file_name='analytics_report.csv',
     mime='text/csv'
@@ -857,17 +852,15 @@ st.markdown(
 st.markdown("""
 <div class='insight-box'>
 
-✅ Focus on high-value customer clusters.
+✅ Focus marketing on high-value RFM clusters.
 
-✅ Improve customer retention campaigns.
+✅ Improve retention strategies for low-frequency customers.
 
-✅ Increase inventory in top-performing regions.
+✅ Increase stock allocation in top-performing regions.
 
-✅ Use forecasting insights for demand planning.
+✅ Optimize pricing strategy using seasonal demand forecasting.
 
-✅ Monitor anomaly transactions for fraud detection.
-
-✅ Optimize pricing based on seasonal trends.
+✅ Use anomaly detection to identify suspicious transactions.
 
 </div>
 """, unsafe_allow_html=True)

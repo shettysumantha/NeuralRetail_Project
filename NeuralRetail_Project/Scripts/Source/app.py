@@ -1394,12 +1394,333 @@ while negative correlation may reveal pricing or demand risks.
 # DOWNLOAD REPORTS
 # ============================================================
 
-st.download_button(
-    label="📥 Download Filtered CSV",
-    data=filtered_df.to_csv(index=False),
-    file_name='analytics_report.csv',
-    mime='text/csv'
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle
 )
+
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import letter
+
+from io import BytesIO
+
+# ============================================================
+# PDF GENERATION FUNCTION
+# ============================================================
+
+def generate_pdf_report():
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter
+    )
+
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    # ========================================================
+    # TITLE
+    # ========================================================
+
+    title = Paragraph(
+        """
+        <font size=22>
+        <b>NeuralRetail Enterprise Analytics Report</b>
+        </font>
+        """,
+        styles['Title']
+    )
+
+    elements.append(title)
+    elements.append(Spacer(1, 20))
+
+    # ========================================================
+    # EXECUTIVE SUMMARY
+    # ========================================================
+
+    summary = f"""
+    <font size=12>
+
+    This AI-powered enterprise report provides
+    complete business insights for retail analytics,
+    forecasting, customer segmentation,
+    anomaly detection, and operational intelligence.
+
+    The dashboard indicates strong business growth,
+    stable customer engagement,
+    and healthy revenue performance.
+
+    </font>
+    """
+
+    elements.append(
+        Paragraph(summary, styles['BodyText'])
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # ========================================================
+    # KPI TABLE
+    # ========================================================
+
+    kpi_data = [
+        ['KPI', 'Value'],
+        ['Total Revenue', f'₹ {total_revenue:,.2f}'],
+        ['Total Orders', f'{total_orders:,}'],
+        ['Total Customers', f'{total_customers:,}'],
+        ['Average Order Value', f'₹ {avg_order:,.2f}'],
+        ['Growth Percentage', f'{growth:.2f}%'],
+        ['Retention Rate', f'{retention:.2f}%'],
+        ['Forecast Accuracy', f'{forecast_accuracy:.2f}%']
+    ]
+
+    table = Table(
+        kpi_data,
+        colWidths=[260, 220]
+    )
+
+    table.setStyle(TableStyle([
+
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#111827')),
+
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+
+        ('FONTSIZE', (0,0), (-1,-1), 11),
+
+        ('BOTTOMPADDING', (0,0), (-1,0), 12),
+
+        ('BACKGROUND', (0,1), (-1,-1), colors.HexColor('#F3F4F6')),
+
+        ('GRID', (0,0), (-1,-1), 1, colors.grey)
+
+    ]))
+
+    elements.append(table)
+
+    elements.append(Spacer(1, 25))
+
+    # ========================================================
+    # SALES INSIGHTS
+    # ========================================================
+
+    sales_text = f"""
+    <font size=13>
+    <b>Sales Performance Analysis</b>
+    </font>
+
+    <br/><br/>
+
+    Total business revenue reached
+    <b>₹ {total_revenue:,.2f}</b>.
+
+    The business processed
+    <b>{total_orders:,}</b> orders
+    with strong purchasing activity.
+
+    Average order value remains stable,
+    indicating consistent customer behavior.
+    """
+
+    elements.append(
+        Paragraph(sales_text, styles['BodyText'])
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # ========================================================
+    # CUSTOMER ANALYTICS
+    # ========================================================
+
+    customer_text = f"""
+    <font size=13>
+    <b>Customer Intelligence</b>
+    </font>
+
+    <br/><br/>
+
+    Customer analytics identified
+    <b>{total_customers:,}</b> active customers.
+
+    RFM segmentation helps classify
+    high-value customers,
+    repeat buyers,
+    and low-engagement customers.
+
+    AI-driven segmentation improves
+    retention strategy planning.
+    """
+
+    elements.append(
+        Paragraph(customer_text, styles['BodyText'])
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # ========================================================
+    # FORECASTING
+    # ========================================================
+
+    forecast_text = f"""
+    <font size=13>
+    <b>Forecasting & Future Trends</b>
+    </font>
+
+    <br/><br/>
+
+    AI forecasting models predict
+    positive sales momentum.
+
+    Forecast model achieved
+    <b>{forecast_accuracy:.2f}%</b>
+    estimated prediction confidence.
+
+    Seasonal trends indicate
+    stable business expansion opportunities.
+    """
+
+    elements.append(
+        Paragraph(forecast_text, styles['BodyText'])
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # ========================================================
+    # ANOMALY DETECTION
+    # ========================================================
+
+    anomaly_count = len(
+        filtered_df[
+            filtered_df['Anomaly'] == -1
+        ]
+    )
+
+    anomaly_text = f"""
+    <font size=13>
+    <b>Anomaly Detection Summary</b>
+    </font>
+
+    <br/><br/>
+
+    AI anomaly detection identified
+    <b>{anomaly_count}</b>
+    unusual transactions.
+
+    These may represent:
+    suspicious activity,
+    high-value purchases,
+    unusual customer behavior,
+    or operational anomalies.
+    """
+
+    elements.append(
+        Paragraph(anomaly_text, styles['BodyText'])
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # ========================================================
+    # RECOMMENDATIONS
+    # ========================================================
+
+    recommendations = """
+    <font size=13>
+    <b>Strategic Recommendations</b>
+    </font>
+
+    <br/><br/>
+
+    • Improve retention campaigns for low-frequency customers.<br/><br/>
+
+    • Focus marketing on high-value RFM segments.<br/><br/>
+
+    • Increase inventory for top-performing regions.<br/><br/>
+
+    • Optimize pricing using AI forecast insights.<br/><br/>
+
+    • Use anomaly monitoring for fraud detection and operational intelligence.<br/><br/>
+
+    • Enhance customer personalization strategies.
+    """
+
+    elements.append(
+        Paragraph(recommendations, styles['BodyText'])
+    )
+
+    elements.append(Spacer(1, 25))
+
+    # ========================================================
+    # FOOTER
+    # ========================================================
+
+    footer = Paragraph(
+        """
+        <font size=10 color='grey'>
+        Generated by NeuralRetail Enterprise AI Dashboard
+        </font>
+        """,
+        styles['BodyText']
+    )
+
+    elements.append(footer)
+
+    # ========================================================
+    # BUILD PDF
+    # ========================================================
+
+    doc.build(elements)
+
+    pdf = buffer.getvalue()
+
+    buffer.close()
+
+    return pdf
+
+# ============================================================
+# GENERATE PDF
+# ============================================================
+
+pdf_report = generate_pdf_report()
+
+# ============================================================
+# DOWNLOAD BUTTONS
+# ============================================================
+
+col1, col2 = st.columns(2)
+
+# ============================================================
+# CSV DOWNLOAD
+# ============================================================
+
+with col1:
+
+    st.download_button(
+        label="📥 Download CSV Report",
+        data=filtered_df.to_csv(index=False),
+        file_name='analytics_report.csv',
+        mime='text/csv'
+    )
+
+# ============================================================
+# PDF DOWNLOAD
+# ============================================================
+
+with col2:
+
+    st.download_button(
+        label="📄 Download Executive PDF",
+        data=pdf_report,
+        file_name="NeuralRetail_Executive_Report.pdf",
+        mime="application/pdf"
+    )
 
 # ============================================================
 # BUSINESS RECOMMENDATIONS

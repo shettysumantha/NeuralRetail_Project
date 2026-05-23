@@ -306,21 +306,19 @@ if 'All' in selected_countries:
     selected_countries = country_list
 
 # ============================================================
-# CUSTOMER SEARCH FILTER
+# DATE FILTER
 # ============================================================
 
-customer_list = sorted(
-    df['customer_id']
-    .dropna()
-    .astype(str)
-    .unique()
+min_date = df['invoicedate'].min()
+max_date = df['invoicedate'].max()
+
+selected_date_range = st.sidebar.date_input(
+    "📅 Select Date Range",
+    [min_date, max_date],
+    min_value=min_date,
+    max_value=max_date
 )
 
-selected_customers = st.sidebar.multiselect(
-    "🔍 Search Customer ID",
-    options=customer_list,
-    default=[]
-)
 
 # ============================================================
 # APPLY FILTERS
@@ -330,18 +328,6 @@ filtered_df = df[
     (df['MonthName'].isin(selected_months)) &
     (df['country'].isin(selected_countries))
 ]
-
-# ============================================================
-# CUSTOMER FILTER
-# ============================================================
-
-if len(selected_customers) > 0:
-
-    filtered_df = filtered_df[
-        filtered_df['customer_id']
-        .astype(str)
-        .isin(selected_customers)
-    ]
 
 # ============================================================
 # HEADER

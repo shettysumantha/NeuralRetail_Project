@@ -1189,38 +1189,129 @@ with tab6:
 # ANOMALY DETECTION
 # ============================================================
 
+
 st.markdown(
-    "<div class='section-title'>Anomaly Detection</div>",
+    """
+    <div class='section-title'>
+    AI Anomaly Detection
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
-anomaly_df = (
-    filtered_df[
-        ['totalsales']
-    ]
-)
+# PREPARE DATA
+anomaly_df = filtered_df[['totalsales']]
 
+# BUILD MODEL
 model = IsolationForest(
     contamination=0.02,
     random_state=42
 )
 
+
+# DETECT ANOMALIES
 filtered_df['Anomaly'] = (
     model.fit_predict(anomaly_df)
 )
 
-fig_anomaly = px.scatter(
-    filtered_df,
-    x=filtered_df.index,
-    y='totalsales',
-    color='Anomaly',
-    template='plotly_dark'
+# MAP LABELS
+filtered_df['Anomaly Label'] = (
+    filtered_df['Anomaly']
+    .map({
+        1: 'Normal Transaction',
+        -1: 'Anomaly Detected'
+    })
 )
 
+# CREATE VISUALIZATION
+fig_anomaly = px.scatter(
+
+    filtered_df,
+
+    x=filtered_df.index,
+
+    y='totalsales',
+
+    color='Anomaly Label',
+
+    template='plotly_dark',
+
+    title='AI-Powered Transaction Anomaly Detection',
+
+    color_discrete_map={
+        'Normal Transaction': '#00E5FF',
+        'Anomaly Detected': '#FF4B4B'
+    },
+
+    hover_data=[
+        'customer_id',
+        'country',
+        'totalsales'
+    ]
+)
+
+# UPDATE LAYOUT
+fig_anomaly.update_layout(
+
+    height=650,
+
+    paper_bgcolor='rgba(0,0,0,0)',
+
+    plot_bgcolor='rgba(0,0,0,0)',
+
+    xaxis_title='Transaction Index',
+
+    yaxis_title='Sales Amount',
+
+    legend_title='Transaction Type'
+)
+
+# # UPDATE MARKERS
+fig_anomaly.update_traces(
+
+    marker=dict(
+        size=8,
+        line=dict(
+            width=1,
+            color='white'
+        )
+    )
+)
+
+# SHOW CHART
 st.plotly_chart(
     fig_anomaly,
     use_container_width=True
 )
+
+# AI INSIGHTS
+anomaly_count = (
+    filtered_df[
+        filtered_df['Anomaly'] == -1
+    ]
+    .shape[0]
+)
+
+st.markdown(f"""
+<div class='insight-box'>
+
+🤖 <b>AI Insights</b><br><br>
+
+⚠️ Detected <b>{anomaly_count}</b> unusual transactions.<br><br>
+
+📈 Anomalies may represent:
+<ul>
+<li>Fraudulent activity</li>
+<li>Bulk purchases</li>
+<li>Pricing/data errors</li>
+<li>Extreme customer behavior</li>
+</ul>
+
+💡 Monitoring anomalies helps improve security,
+forecasting accuracy, and operational efficiency.
+
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # CORRELATION MATRIX

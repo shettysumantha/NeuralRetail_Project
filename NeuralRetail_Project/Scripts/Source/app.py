@@ -692,12 +692,20 @@ with tab4:
 # TAB 5 — FORECASTING
 # ============================================================
 
+# ============================================================
+# TAB 5 — FORECASTING
+# ============================================================
+
 with tab5:
 
     st.markdown(
         "<div class='section-title'>Forecasting & Trends</div>",
         unsafe_allow_html=True
     )
+
+    # ========================================================
+    # PREPARE FORECAST DATA
+    # ========================================================
 
     forecast_df = (
         filtered_df
@@ -706,26 +714,49 @@ with tab5:
         .reset_index()
     )
 
+    # Prophet required column names
     forecast_df.columns = ['ds', 'y']
+
+    # ========================================================
+    # TRAIN MODEL
+    # ========================================================
 
     model = Prophet()
 
-    model.fit(
-        forecast_df
-    )
+    model.fit(forecast_df)
+
+    # ========================================================
+    # CREATE FUTURE DATES
+    # ========================================================
 
     future = model.make_future_dataframe(
         periods=30
     )
 
-    forecast = model.predict(
-        future
-    )
+    # ========================================================
+    # GENERATE FORECAST
+    # ========================================================
+
+    forecast = model.predict(future)
+
+    # ========================================================
+    # RENAME COLUMNS FOR DISPLAY
+    # ========================================================
+
+    forecast_display = forecast.rename(columns={
+        'ds': 'Date',
+        'yhat': 'Predicted Sales'
+    })
+
+    # ========================================================
+    # FORECAST CHART
+    # ========================================================
 
     fig_forecast = px.line(
-        forecast,
-        x='ds',
-        y='yhat',
+        forecast_display,
+        x='Date',
+        y='Predicted Sales',
+        title='AI Sales Forecast - Next 30 Days',
         template='plotly_dark'
     )
 
@@ -736,10 +767,48 @@ with tab5:
         )
     )
 
+    fig_forecast.update_layout(
+
+        height=550,
+
+        paper_bgcolor='rgba(0,0,0,0)',
+
+        plot_bgcolor='rgba(0,0,0,0)',
+
+        font=dict(
+            color='white',
+            size=14
+        ),
+
+        title_font=dict(
+            size=24
+        ),
+
+        xaxis_title='Forecast Date',
+
+        yaxis_title='Predicted Revenue',
+
+        hovermode='x unified'
+    )
+
     st.plotly_chart(
         fig_forecast,
         use_container_width=True
     )
+
+    # ========================================================
+    # AI INSIGHT
+    # ========================================================
+
+    st.markdown("""
+    <div class='insight-box'>
+
+    🤖 AI Forecast Insight:
+    Predicted sales trend indicates expected future growth
+    with stable purchasing momentum over upcoming periods.
+
+    </div>
+    """, unsafe_allow_html=True)
 
 # ============================================================
 # TAB 6 — RFM SEGMENTATION

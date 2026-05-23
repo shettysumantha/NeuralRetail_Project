@@ -128,7 +128,11 @@ section[data-testid="stSidebar"] {
 
     font-weight: 600;
 
+<<<<<<< HEAD
     color: #ffffff;
+=======
+    color: #FFFFFF;
+>>>>>>> ac5db520e1b2313068d4f190125e7318aaa36fd1
 
     letter-spacing: 1px;
 

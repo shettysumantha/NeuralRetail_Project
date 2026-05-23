@@ -463,15 +463,15 @@ with tab1:
 
     sales_by_month = (
         filtered_df
-        .groupby('month')['totalsales']
+        .groupby('MonthName')['totalsales']
         .sum()
         .reset_index()
     )
 
     fig = px.area(
         sales_by_month,
-        x='month',
-        y='totalsales',
+        x='Month',
+        y='Total Sales',
         template='plotly_dark',
         color_discrete_sequence=['#38bdf8']
     )

@@ -463,7 +463,7 @@ with tab1:
 
     sales_by_month = (
         filtered_df
-        .groupby('MonthName')['totalsales']
+        .groupby('month')['totalsales']
         .sum()
         .reset_index()
     )

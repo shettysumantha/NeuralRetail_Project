@@ -1318,28 +1318,77 @@ forecasting accuracy, and operational efficiency.
 # ============================================================
 
 st.markdown(
-    "<div class='section-title'>Correlation Matrix</div>",
+    """
+    <div class='section-title'>
+    Business Correlation Analysis
+    </div>
+    """,
     unsafe_allow_html=True
 )
 
-corr = (
-    filtered_df[
-        ['quantity', 'price', 'totalsales']
-    ]
-    .corr()
-)
+# Select important business columns
+corr_df = filtered_df[
+    ['quantity', 'price', 'totalsales']
+]
 
+# Create correlation matrix
+corr = corr_df.corr()
+
+# Heatmap
 fig_heat = px.imshow(
     corr,
     text_auto=True,
-    template='plotly_dark',
-    color_continuous_scale='RdBu'
+    aspect="auto",
+    color_continuous_scale=[
+        [0, "#ff4d4d"],
+        [0.5, "#111827"],
+        [1, "#00E5FF"]
+    ],
+    template='plotly_dark'
 )
 
+# Layout customization
+fig_heat.update_layout(
+    title="Business Metrics Correlation Matrix",
+    title_x=0.5,
+    height=500,
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    font=dict(
+        color='white',
+        size=14
+    )
+)
+
+# Axis labels
+fig_heat.update_xaxes(
+    title="Business Variables"
+)
+
+fig_heat.update_yaxes(
+    title="Business Variables"
+)
+
+# Show chart
 st.plotly_chart(
     fig_heat,
     use_container_width=True
 )
+
+# AI Insight Box
+st.markdown("""
+<div class='insight-box'>
+
+📊 AI Insight:
+
+This correlation matrix identifies which business variables
+have the strongest influence on revenue generation.
+
+Higher positive correlation indicates strong business impact,
+while negative correlation may reveal pricing or demand risks.
+
+</div>
+""", unsafe_allow_html=True)
 
 # ============================================================
 # DOWNLOAD REPORTS

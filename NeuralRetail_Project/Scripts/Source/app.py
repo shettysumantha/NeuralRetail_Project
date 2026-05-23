@@ -10,8 +10,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
 import plotly.express as px
+
 from prophet import Prophet
 
 from sklearn.cluster import KMeans
@@ -24,7 +24,7 @@ from io import BytesIO
 import warnings
 warnings.filterwarnings('ignore')
 
-# PDF
+# PDF LIBRARIES
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -38,7 +38,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -75,14 +75,6 @@ html, body, [class*="css"] {
 section[data-testid="stSidebar"] {
     background: #0f172a;
     border-right: 1px solid rgba(255,255,255,0.1);
-}
-
-.sidebar-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #38bdf8;
-    text-align: center;
-    margin-bottom: 20px;
 }
 
 .dashboard-title {
@@ -125,7 +117,7 @@ section[data-testid="stSidebar"] {
 
 .kpi-title {
     font-size: 16px;
-    color: #ffffff;
+    color: white;
     font-weight: 600;
     margin-bottom: 10px;
 }
@@ -137,11 +129,11 @@ section[data-testid="stSidebar"] {
 }
 
 .section-title {
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 700;
     color: white;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .insight-box {
@@ -150,10 +142,6 @@ section[data-testid="stSidebar"] {
     padding: 18px;
     border-radius: 12px;
     margin-top: 15px;
-}
-
-[data-testid="stDataFrame"] {
-    background: rgba(255,255,255,0.05);
 }
 
 </style>
@@ -210,14 +198,10 @@ df['weekday'] = (
 # SIDEBAR
 # ============================================================
 
-st.sidebar.markdown("""
-<div class='sidebar-title'>
-NeuralRetail AI
-</div>
-""", unsafe_allow_html=True)
+st.sidebar.title("📊 NeuralRetail AI")
 
 menu = st.sidebar.radio(
-    "📌 Navigation",
+    "Navigation",
     [
         "🏠 Home",
         "📈 Executive Summary",
@@ -279,7 +263,7 @@ filtered_df = df[
 ]
 
 # ============================================================
-# KPIs
+# KPI CALCULATIONS
 # ============================================================
 
 total_revenue = filtered_df['totalsales'].sum()
@@ -291,6 +275,74 @@ total_customers = filtered_df['customer_id'].nunique()
 avg_order = total_revenue / total_orders
 
 growth = np.random.uniform(10,25)
+
+# ============================================================
+# PDF FUNCTION
+# ============================================================
+
+def generate_pdf():
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter
+    )
+
+    styles = getSampleStyleSheet()
+
+    elements = []
+
+    title = Paragraph(
+        "NeuralRetail Executive Report",
+        styles['Title']
+    )
+
+    elements.append(title)
+
+    elements.append(Spacer(1,20))
+
+    data = [
+        ['Metric','Value'],
+        ['Total Revenue', f'₹ {total_revenue:,.2f}'],
+        ['Total Orders', f'{total_orders:,}'],
+        ['Total Customers', f'{total_customers:,}'],
+        ['Average Order Value', f'₹ {avg_order:,.2f}'],
+        ['Growth %', f'{growth:.2f}%']
+    ]
+
+    table = Table(data)
+
+    table.setStyle(TableStyle([
+
+        ('BACKGROUND',(0,0),(-1,0),colors.black),
+        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
+        ('GRID',(0,0),(-1,-1),1,colors.grey)
+
+    ]))
+
+    elements.append(table)
+
+    elements.append(Spacer(1,20))
+
+    paragraph = Paragraph(
+        """
+        AI insights indicate strong business performance,
+        healthy customer growth,
+        and stable sales trends.
+        """,
+        styles['BodyText']
+    )
+
+    elements.append(paragraph)
+
+    doc.build(elements)
+
+    pdf = buffer.getvalue()
+
+    buffer.close()
+
+    return pdf
 
 # ============================================================
 # HEADER
@@ -312,9 +364,9 @@ st.markdown("<br>", unsafe_allow_html=True)
 # KPI ROW
 # ============================================================
 
-k1,k2,k3,k4 = st.columns(4)
+c1,c2,c3,c4 = st.columns(4)
 
-with k1:
+with c1:
 
     st.markdown(f"""
     <div class='kpi-card'>
@@ -323,7 +375,7 @@ with k1:
     </div>
     """, unsafe_allow_html=True)
 
-with k2:
+with c2:
 
     st.markdown(f"""
     <div class='kpi-card'>
@@ -332,7 +384,7 @@ with k2:
     </div>
     """, unsafe_allow_html=True)
 
-with k3:
+with c3:
 
     st.markdown(f"""
     <div class='kpi-card'>
@@ -341,7 +393,7 @@ with k3:
     </div>
     """, unsafe_allow_html=True)
 
-with k4:
+with c4:
 
     st.markdown(f"""
     <div class='kpi-card'>
@@ -386,10 +438,10 @@ if menu == "🏠 Home":
     )
 
     fig.update_layout(
-        title='Monthly Revenue Overview',
+        title='Monthly Revenue Trend',
         xaxis_title='Month',
         yaxis_title='Revenue',
-        height=550,
+        height=600,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'
     )
@@ -425,11 +477,7 @@ elif menu == "📈 Executive Summary":
     )
 
     fig.update_layout(
-        height=650,
-        xaxis_title='Country',
-        yaxis_title='Revenue',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        height=650
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -442,7 +490,7 @@ elif menu == "💰 Sales Performance":
 
     st.markdown("""
     <div class='section-title'>
-    Sales Performance Analytics
+    Sales Performance
     </div>
     """, unsafe_allow_html=True)
 
@@ -461,10 +509,6 @@ elif menu == "💰 Sales Performance":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=600
-    )
-
     st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================
@@ -475,7 +519,7 @@ elif menu == "👥 Customer Insights":
 
     st.markdown("""
     <div class='section-title'>
-    Customer Intelligence
+    Customer Insights
     </div>
     """, unsafe_allow_html=True)
 
@@ -495,9 +539,7 @@ elif menu == "👥 Customer Insights":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=700
-    )
+    fig.update_layout(height=700)
 
     st.plotly_chart(fig, use_container_width=True)
 
@@ -528,9 +570,7 @@ elif menu == "🌍 Regional Analysis":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=700
-    )
+    fig.update_layout(height=700)
 
     st.plotly_chart(fig, use_container_width=True)
 
@@ -575,14 +615,12 @@ elif menu == "🔮 Forecasting":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=650
-    )
+    fig.update_layout(height=650)
 
     st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================
-# RFM
+# RFM SEGMENTATION
 # ============================================================
 
 elif menu == "🧠 RFM Segmentation":
@@ -639,6 +677,7 @@ elif menu == "🧠 RFM Segmentation":
         )
 
     else:
+
         rfm['Cluster'] = 0
 
     fig = px.scatter_3d(
@@ -650,14 +689,12 @@ elif menu == "🧠 RFM Segmentation":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=800
-    )
+    fig.update_layout(height=800)
 
     st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================
-# ANOMALY
+# ANOMALY DETECTION
 # ============================================================
 
 elif menu == "🚨 Anomaly Detection":
@@ -687,21 +724,19 @@ elif menu == "🚨 Anomaly Detection":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=700
-    )
+    fig.update_layout(height=700)
 
     st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================
-# CORRELATION
+# CORRELATION ANALYSIS
 # ============================================================
 
 elif menu == "📊 Correlation Analysis":
 
     st.markdown("""
     <div class='section-title'>
-    Correlation Matrix
+    Correlation Analysis
     </div>
     """, unsafe_allow_html=True)
 
@@ -718,82 +753,12 @@ elif menu == "📊 Correlation Analysis":
         template='plotly_dark'
     )
 
-    fig.update_layout(
-        height=550
-    )
+    fig.update_layout(height=600)
 
     st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================
-# PDF FUNCTION
-# ============================================================
-
-def generate_pdf():
-
-    buffer = BytesIO()
-
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=letter
-    )
-
-    styles = getSampleStyleSheet()
-
-    elements = []
-
-    title = Paragraph(
-        "NeuralRetail Executive Report",
-        styles['Title']
-    )
-
-    elements.append(title)
-
-    elements.append(Spacer(1,20))
-
-    data = [
-        ['Metric','Value'],
-        ['Total Revenue', f'₹ {total_revenue:,.2f}'],
-        ['Total Orders', f'{total_orders:,}'],
-        ['Total Customers', f'{total_customers:,}'],
-        ['Average Order Value', f'₹ {avg_order:,.2f}'],
-        ['Growth %', f'{growth:.2f}%']
-    ]
-
-    table = Table(data)
-
-    table.setStyle(TableStyle([
-
-        ('BACKGROUND',(0,0),(-1,0),colors.black),
-        ('TEXTCOLOR',(0,0),(-1,0),colors.white),
-        ('GRID',(0,0),(-1,-1),1,colors.grey)
-
-    ]))
-
-    elements.append(table)
-
-    elements.append(Spacer(1,20))
-
-    para = Paragraph(
-        """
-        AI insights indicate strong business performance,
-        stable customer growth,
-        and healthy revenue generation.
-        """,
-        styles['BodyText']
-    )
-
-    elements.append(para)
-
-    doc.build(elements)
-
-    pdf = buffer.getvalue()
-
-    buffer.close()
-
-    return pdf
-
-# ============================================================
-# DOWNLOAD
+# DOWNLOAD REPORTS
 # ============================================================
 
 elif menu == "📥 Download Reports":
@@ -806,22 +771,22 @@ elif menu == "📥 Download Reports":
 
     pdf_report = generate_pdf()
 
-    c1,c2 = st.columns(2)
+    d1,d2 = st.columns(2)
 
-    with c1:
+    with d1:
 
         st.download_button(
-            label="📥 Download CSV",
+            label="📥 Download CSV Report",
             data=filtered_df.to_csv(index=False),
-            file_name="analytics_report.csv",
-            mime="text/csv"
+            file_name='analytics_report.csv',
+            mime='text/csv'
         )
 
-    with c2:
+    with d2:
 
         st.download_button(
-            label="📄 Download PDF",
+            label="📄 Download PDF Report",
             data=pdf_report,
-            file_name="NeuralRetail_Report.pdf",
-            mime="application/pdf"
+            file_name='NeuralRetail_Report.pdf',
+            mime='application/pdf'
         )
